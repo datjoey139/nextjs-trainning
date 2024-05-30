@@ -1,0 +1,86 @@
+{
+	"NextJS Mongoose Model": {
+		"prefix": "nextmongomodel",
+		"body": [
+			"import { TypeFromMongooseDocument } from \"@/lib/type-utils\";",
+			"import mongoose from \"mongoose\";",
+			"",
+			"export interface $1Document extends mongoose.Document {",
+			"\t// Add your fields here",
+			"\tcreatedAt?: Date;",
+			"\tupdatedAt?: Date;",
+			"}",
+			"",
+			"export type $1 = TypeFromMongooseDocument<$1Document>;",
+			"",
+			"const schema = new mongoose.Schema<$1Document>({",
+			"// Add your fields here",
+			"}, { timestamps: true });",
+			"",
+			"const $1Model = (mongoose.models.$1 || mongoose.model<$1Document>(\"$1\", schema)) as mongoose.Model<$1Document>;",
+			"export default $1Model;"
+		],
+		"scope": "typescript"
+	},
+	"NextJS Repository": {
+		"prefix": "nextrepository",
+		"body": [
+			"import mongooseConnect from \"@/lib/mongodb/mongoose\";",
+			"",
+			"export class ${1}Repository {",
+			"\t// Add your methods here",
+			"\t$2",
+			"}",
+			"",
+			"const ${1/(.*)/${1:/downcase}/}Repository = new ${1}Repository();",
+			"export default ${1/(.*)/${1:/downcase}/}Repository;",
+			""
+		],
+		"scope": "typescript"
+	},
+	"NextJS Repository Method": {
+		"prefix": "nextrepomethod",
+		"body": [
+			"async $1($2) {",
+			"\tawait mongooseConnect();",
+			"",
+			"\t// implement the method",
+			"}"
+		],
+		"scope": "typescript"
+	},
+	"NextJS Service": {
+		"prefix": "nextservice",
+		"body": [
+			"import { $1, $1Document } from \"@/models/${1/(.*)/${1:/downcase}/}\";",
+			"import repositories, { RepositoryRegistry } from \"@/repositories\";",
+			"",
+			"class $1Service {",
+			"\tconstructor(",
+			"\t\tprivate readonly repo: RepositoryRegistry",
+			"\t) { }",
+			"",
+			"\t// Add your service methods here",
+			"\t$2",
+			"}",
+			"",
+			"const ${1/(.*)/${1:/downcase}/}Service = new $1Service(repositories);",
+			"",
+			"export default ${1/(.*)/${1:/downcase}/}Service;"
+		],
+		"scope": "typescript"
+	},
+	"NextJS API middleware": {
+		"prefix": "nextapimiddle",
+		"body": [
+			"import { APIMiddleware } from \"@/lib/api/handler\";",
+			"",
+			"export function $1Middleware<OptsT>(): APIMiddleware<OptsT> {",
+			"\treturn async function (req, opts, next) {",
+			"\t\treturn next(req, opts);",
+			"\t}",
+			"}"
+		],
+		"scope": "typescript"
+	},
+}
