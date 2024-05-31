@@ -16,12 +16,12 @@ const Register = () => {
     const password = e.target[1].value;
 
     if (!isValidEmail(email)) {
-      // setError("Email is invalid");
+      setError("Email is invalid");
       return;
     }
 
     if (!password || password.length < 8) {
-      // setError("Password is invalid");
+      setError("Password is invalid");
       return;
     }
 
@@ -74,6 +74,7 @@ const Register = () => {
             {" "}
             Register
           </button>
+          <p className="text-red-600 text-[16px] mb-4">{error && error}</p>
         </form>
         <Link
           className="block text-center text-blue-500 hover:underline mt-2"
