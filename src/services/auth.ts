@@ -3,31 +3,26 @@ import repositories, { RepositoryRegistry } from "@/repositories";
 import bcrypt from "bcrypt";
 import { jwtVerify, SignJWT } from "jose";
 import mongoose from "mongoose";
+import { cookies } from "next/headers";
+import { encrypt } from "@/lib/app/auth";
 
 class AuthService {
-  async login(username: string, password: string): Promise<string> {
+  async login(username: string, password: string): Promise<boolean> {
     const user = await repositories.user.getUserByEmail(username);
     if (!user) {
       throw errors.userNotFound;
     }
-
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordCorrect) {
-      throw errors.invalidUsernameOrPassword;
+    const isAuthenticated = await bcrypt.compare(password, user.password);
+    if (!isAuthenticated) {
+        return false;
     }
+    // Create the session
+    const expires = new Date(Date.now() + 3600 * 1000);
+    const session = await encrypt({ data: user, expires });
+    // Save the session in a cookie
+    cookies().set("session", session, { expires, httpOnly: true });
 
-    const secret = process.env.JWT_SECRET;
-    if (!secret) {
-      throw new Error("JWT_SECRET is not defined");
-    }
-
-    const token = await new SignJWT({ username: user.email })
-      .setProtectedHeader({ alg: "HS256" })
-      .setIssuedAt()
-      .setExpirationTime("2h")
-      .sign(new TextEncoder().encode(secret));
-    return token;
+    return true;
   }
 
   async register(email: string, password: string): Promise<boolean> {
