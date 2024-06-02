@@ -1,20 +1,23 @@
+import { TypeFromMongooseDocument } from "@/lib/type-utils";
 import mongoose from "mongoose";
 
-const { Schema } = mongoose;
+export interface UserDocument extends mongoose.Document {
+  email: string;
+  password: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
-const userSchema = new Schema(
+export type User = TypeFromMongooseDocument<UserDocument>;
+
+const schema = new mongoose.Schema<UserDocument>(
   {
-    email: {
-      type: String,
-      unique: true,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: false,
-    },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
   },
   { timestamps: true }
 );
 
-export default mongoose.models.user || mongoose.model("user", userSchema);
+const UserModel = (mongoose.models.User ||
+  mongoose.model<UserDocument>("User", schema)) as mongoose.Model<UserDocument>;
+export default UserModel;
