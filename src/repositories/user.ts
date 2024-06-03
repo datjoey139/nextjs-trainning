@@ -9,9 +9,9 @@ export class UserRepository {
     await newUser.save();
   }
 
-  async checkUserByEmail(name: string): Promise<boolean> {
+  async checkUserByEmail(email: string): Promise<boolean> {
     try {
-      await this.getUserByEmail(name);
+      await this.getUserByEmail(email);
       return true;
     } catch (error) {
       if (error === errors.userNotFound) {
@@ -21,10 +21,10 @@ export class UserRepository {
     }
   }
 
-  async getUserByEmail(name: string): Promise<User> {
+  async getUserByEmail(email: string): Promise<User> {
     await mongooseConnect();
     const user = await UserModel.findOne({
-      name,
+      email,
     }).exec();
 
     if (!user) {

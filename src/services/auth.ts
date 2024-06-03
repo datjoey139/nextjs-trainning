@@ -7,22 +7,25 @@ import { cookies } from "next/headers";
 import { encrypt } from "@/lib/app/auth";
 
 class AuthService {
-  async login(username: string, password: string): Promise<boolean> {
-    const user = await repositories.user.getUserByEmail(username);
+  async login(email: string, password: string): Promise<string> {
+    const user = await repositories.user.getUserByEmail(email);
     if (!user) {
-      throw errors.userNotFound;
+      throw errors.invalidUsernameOrPassword;
     }
-    const isAuthenticated = await bcrypt.compare(password, user.password);
-    if (!isAuthenticated) {
-        return false;
-    }
-    // Create the session
-    const expires = new Date(Date.now() + 3600 * 1000);
-    const session = await encrypt({ data: user, expires });
-    // Save the session in a cookie
-    cookies().set("session", session, { expires, httpOnly: true });
 
-    return true;
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      throw errors.invalidUsernameOrPassword;
+    }
+
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+
+    const token = await new SignJWT({ email: user.email })
+      .setProtectedHeader({ alg: "HS256" })
+      .setExpirationTime("24h")
+      .sign(secret);  
+
+    return token;
   }
 
   async register(email: string, password: string): Promise<boolean> {

@@ -1,22 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { login } from "./action";
 
 const Login = () => {
   const router = useRouter();
   const [error, setError] = useState("");
-  // const session = useSession();
-  const { data: session, status: sessionStatus } = useSession();
-
-  useEffect(() => {
-    if (sessionStatus === "authenticated") {
-      router.replace("/dashboard");
-    }
-  }, [sessionStatus, router]);
-
   const isValidEmail = (email: string) => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     return emailRegex.test(email);
@@ -37,13 +27,8 @@ const Login = () => {
       return;
     }
 
-    const isSuccessful = await login(email, password);
-    if (isSuccessful) {
-      setError("");
-      router.push("/dashboard");
-    } else {
-      setError("Invalid email or password");
-    }
+    const res = await login(email, password);
+    console.log(res);
   };
 
   return (

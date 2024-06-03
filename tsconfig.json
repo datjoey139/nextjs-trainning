@@ -33,7 +33,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/repositories/test.stub"
-  ],
+, "src/app/api/jobs/products/route.js"  ],
   "exclude": [
     "node_modules"
   ]
